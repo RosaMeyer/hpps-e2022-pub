@@ -18,3 +18,5 @@ sort.o: sort.c
 clean:
 	rm -f *.o
 
+printpoints: printpoints.c io.o
+	$(CC) -o printpoints printpoints.c io.o $(CFLAGS)
