@@ -20,3 +20,6 @@ clean:
 
 printpoints: printpoints.c io.o
 	$(CC) -o printpoints printpoints.c io.o $(CFLAGS)
+
+verifyindexes: verifyindexes.c io.o
+	$(CC) -o verifyindexes verifyindexes.c io.o $(CFLAGS)

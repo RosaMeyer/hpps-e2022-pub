@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdint.h>
+#include <time.h>
 
 int main(int argc, char** argv) {
   if (argc != 3) {
