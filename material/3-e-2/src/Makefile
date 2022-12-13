@@ -23,3 +23,6 @@ printpoints: printpoints.c io.o
 
 verifyindexes: verifyindexes.c io.o
 	$(CC) -o verifyindexes verifyindexes.c io.o $(CFLAGS)
+
+genpoints: genpoints.c io.o
+	$(CC) -o genpoints genpoints.c io.o $(CFLAGS)
