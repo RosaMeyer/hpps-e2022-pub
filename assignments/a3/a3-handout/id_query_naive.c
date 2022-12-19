@@ -9,24 +9,51 @@
 #include "record.h"
 #include "id_query.h"
 
+// OBS struct made in advance!
+// Has a pointer to an array of records (*rs) and an integer (n) 
+// representing the number of records in the array.
 struct naive_data {
   struct record *rs;
   int n;
 };
 
+// TODO
 struct naive_data* mk_naive(struct record* rs, int n) {
-  // TODO
-  assert(0);
+
+  // mk_index_fn* data_index = malloc(sizeof(mk_index_fn));
+
+  struct naive_data* data_n = malloc(sizeof(struct naive_data));
+
+  data_n->rs = rs;
+  data_n->n = n;
+  
+  return data_n;
 }
 
+// TODO
 void free_naive(struct naive_data* data) {
-  // TODO
-  assert(0);
+  
+  free(data->rs);
+  free(data);
+
 }
 
+// TODO
 const struct record* lookup_naive(struct naive_data *data, int64_t needle) {
-  // TODO
-  assert(0);
+  
+  // Iterates through the record array and returns a (the adress of?) pointer to the record with the 
+  // matching ID if it is found.
+
+  // i < data->n ===> i has to be less than the number of records in the array
+  for (int i = 0; i < data->n; i++) {
+    if (data->rs[i].osm_id == needle) {
+      return &(data->rs[i]);
+    }
+  }
+
+  // If no matching record is found, the function returns NULL.
+  return NULL;
+
 }
 
 int main(int argc, char** argv) {
