@@ -36,5 +36,12 @@ def send_to_server(message: str) -> None:
 
 
 if __name__ == "__main__":
-    # Send a message to a server
-    send_to_server("This is a message")
+    # # Send a message to a server
+    # send_to_server("This is a message")
+
+    # Get message from user input
+    message = input("Enter message to send: ")
+
+    # Sends a message to server
+    send_to_server(message)
+

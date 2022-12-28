@@ -57,8 +57,18 @@ class MyHandler(socketserver.StreamRequestHandler):
 
             string_message = bytes_message.decode('utf-8')
 
+            # Check if message is ping and respond with pong
+            # Wrote myself!
+            if string_message.lower() == "ping":
+                response = bytearray("pong".encode())
+            else:
+                response = bytearray("BAD REQUEST".encode())
+
             response = \
                 bytearray(f"Message '{string_message}' received".encode())
+            self.request.sendall(response)
+
+            # Wrote myself!
             self.request.sendall(response)
 
             # Uncomment this line to add a delay to message processing
