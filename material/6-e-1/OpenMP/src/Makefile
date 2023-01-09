@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc-12
 CFLAGS=-Wall -Wextra -pedantic -pthread -lm -O3 -fopenmp
 EXECUTABLES=mandelbrot
 

@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc-12 # changed from gcc to gcc-12 (not 10 or 11 but 12) by document 'Using OpenMP on macOS' from Git - due to macOS user
 CFLAGS=-Wall -Wextra -pedantic -pthread -lm -O3 -fopenmp
 EXECUTABLES=mandelbrot
 

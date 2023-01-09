@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc-12
 CFLAGS=-g -Wall -Wextra -pedantic -pthread
 
 all: forks

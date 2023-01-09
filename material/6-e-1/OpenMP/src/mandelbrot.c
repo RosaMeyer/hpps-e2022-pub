@@ -171,6 +171,14 @@ int main(int argc, char** argv) {
   int *pixels = malloc(imgw * imgh * sizeof(int));
   int points = 2048; // For colour palette.
 
+  double before = seconds();
+
+  // We can split the difference between static and dynamic scheduling by 
+  // using chunks in a dynamic schedule. Here, each thread will take a set 
+  // number of iterations, called a “chunk”, execute it, and then be 
+  // assigned a new chunk when it is done.
+
+  #pragma omp parallel for schedule(dynamic, 100) collapse(2)
   for (int i = 0; i < imgh; i++) {
     for (int j = 0; j < imgw; j++) {
       double x = xmin + (j*sizex) / imgw;
@@ -180,6 +188,11 @@ int main(int argc, char** argv) {
       pixels[i*imgw+j] = pixel;
     }
   }
+  double after = seconds();
+  printf("Rendering time: %fs\n", after-before);
 
+  before = seconds();
   ppm_to_file(output_fname, pixels, imgh, imgw);
+  after = seconds();
+  printf("IO time: %fs\n", after-before);
 }
