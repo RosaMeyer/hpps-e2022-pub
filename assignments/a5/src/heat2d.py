@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import sys
 
 # Set this to True to use the C-accelerated implementation.
-use_c = True
+use_c = True # OBS OBS: works if set to False
 
 # Prepare to load C library
 heateqclib = None

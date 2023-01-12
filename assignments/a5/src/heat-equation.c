@@ -7,25 +7,47 @@
 #include "debugbmp.h"
 
 size_t pos(size_t width, size_t x, size_t y) {
-    assert(0);
+    return y * width + x;
 }
 
-void write_borders(float* data, size_t width, size_t height) {
-    assert(0);
-}
+// Write borders
+void write_borders(float* data, size_t width, size_t height) {    
+    for (size_t n = 0; n < width; n++) {
+        data[pos(width, n , 0)] = 20.0;
+        data[pos(width, n, height-1)] = -273.15;
+    }    
+    for (size_t n = 0; n < height; n++) {
+        data[pos(width, 0, n)] = -273.15; 
+        data[pos(width, width-1, n)] = -273.15;
+    }
+}  
 
+// Compute the new value for the given position
 float stencil(float* data, size_t width, size_t x, size_t y, float alpha) {
-    assert(0);
+    return alpha * (data[pos(width, x,y)] + data[pos(width, x-1,y)] + data[pos(width, x+1,y)] + data[pos(width, x,y-1)] + data[pos(width, x,y+1)]);
 }
 
+// Runs a single simulated timestep
 void apply_stencil(float* data, size_t width, size_t height, size_t offset, float alpha) {
-    assert(0);
+    for (size_t x = 1; x < width-1; x++) {
+        for (size_t y = 1 + ((x+offset)%2); y < height-1; y = y + 2) { // y = y+2 : stepValue!
+            data[pos(width, x, y)] = stencil(data, width, x, y, alpha);
+        }
+    }
 }
 
+// Computes the average elementwise difference between two arrays
 float compute_delta(float* data, float* prev, size_t width, size_t height) {
-    assert(0);
+    float res = 0.0;
+    for (size_t x = 0; x < width; x++) {
+        for (size_t y = 0; y < height; y++) {
+            res += fabs(prev[pos(width, x, y)] - data[pos(width, x, y)]);
+        }
+    }
+    return res / (width * height);
 }
 
+// Runs the simulation for a number of steps
 void run_simulation(size_t width, size_t height, size_t steps, const char* filename) {
     size_t size = width*height;
 
