@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <omp.h>
 #include "debugbmp.h"
+#include "timing.h"
 
 size_t pos(size_t width, size_t x, size_t y) {
     return y * width + x;
@@ -29,6 +30,7 @@ float stencil(float* data, size_t width, size_t x, size_t y, float alpha) {
 
 // Runs a single simulated timestep
 void apply_stencil(float* data, size_t width, size_t height, size_t offset, float alpha) {
+    #pragma omp parallel for 
     for (size_t x = 1; x < width-1; x++) {
         for (size_t y = 1 + ((x+offset)%2); y < height-1; y = y + 2) { // y = y+2 : stepValue!
             data[pos(width, x, y)] = stencil(data, width, x, y, alpha);
@@ -39,6 +41,8 @@ void apply_stencil(float* data, size_t width, size_t height, size_t offset, floa
 // Computes the average elementwise difference between two arrays
 float compute_delta(float* data, float* prev, size_t width, size_t height) {
     float res = 0.0;
+
+    #pragma omp parallel for reduction(+:res)
     for (size_t x = 0; x < width; x++) {
         for (size_t y = 0; y < height; y++) {
             res += fabs(prev[pos(width, x, y)] - data[pos(width, x, y)]);

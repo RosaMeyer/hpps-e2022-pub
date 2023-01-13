@@ -4,6 +4,14 @@ import ctypes
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+import time
+
+# get the start time (Wall)
+start_time = time.time()
+
+# get the start time (CPU)
+st = time.process_time()
+
 
 # Set this to True to use the C-accelerated implementation.
 use_c = True # OBS OBS: works if set to False
@@ -41,6 +49,8 @@ def stencil(data, width, x, y, alpha = 0.2):
     return alpha * (data[pos(width, x,y)] + data[pos(width, x-1,y)] + data[pos(width, x+1,y)] + data[pos(width, x,y-1)] + data[pos(width, x,y+1)])
 
 
+st_par = time.time()
+
 # Runs a single simulated timestep
 def apply_stencil(data, width, height, offset, alpha = 0.2):
     if heateqclib is not None:
@@ -71,6 +81,8 @@ def compute_delta(data, prev, width, height):
 
     return res / (width*height)
 
+et_par = time.time()
+res = et_par - st_par
 
 # Runs the simulation for a number of steps
 def run_simulation(width, height, steps):
@@ -114,3 +126,21 @@ if __name__ == "__main__":
     s = 100 if len(sys.argv) < 4 else int(sys.argv[3])
 
     run_simulation(n, m, s)
+
+
+# get the end time (Wall)
+end_time = time.time()
+
+# get the end time (CPU)
+et = time.process_time()
+
+# get execution time (Wall)
+execution_time_wall = end_time - start_time
+
+# get execution time (CPU)
+execution_time_CPU = et - st
+
+print("Wall execution time: ", execution_time_wall, "sec.")
+print("CPU execution time: ", execution_time_CPU, "sec.")
+
+print("\nWall execution time (forloop): ", res, "sec.")
