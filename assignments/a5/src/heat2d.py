@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
 
 import ctypes
+import sys
+from time import time
+
 import numpy as np
 import matplotlib.pyplot as plt
-import sys
-import time
 
+""" 
 # get the start time (Wall)
 start_time = time.time()
 
 # get the start time (CPU)
 st = time.process_time()
+"""
 
 
 # Set this to True to use the C-accelerated implementation.
-use_c = True # OBS OBS: works if set to False
+use_c = False # OBS OBS: works if set to False
+print('use_c: ', use_c)
 
 # Prepare to load C library
 heateqclib = None
@@ -48,8 +52,9 @@ def write_borders(data, width, height):
 def stencil(data, width, x, y, alpha = 0.2):
     return alpha * (data[pos(width, x,y)] + data[pos(width, x-1,y)] + data[pos(width, x+1,y)] + data[pos(width, x,y-1)] + data[pos(width, x,y+1)])
 
-
+"""
 st_par = time.time()
+"""
 
 # Runs a single simulated timestep
 def apply_stencil(data, width, height, offset, alpha = 0.2):
@@ -81,8 +86,10 @@ def compute_delta(data, prev, width, height):
 
     return res / (width*height)
 
+"""
 et_par = time.time()
 res = et_par - st_par
+"""
 
 # Runs the simulation for a number of steps
 def run_simulation(width, height, steps):
@@ -92,12 +99,24 @@ def run_simulation(width, height, steps):
     prev = np.zeros(size, dtype=np.float32)
 
     # Prepare the buffer
+
+# timing!
+    before = time()
+
     write_borders(data, width, height)
+
+# timing!
+    after = time()
+
     #plot_image(data, width, height, 0)
+    print(f'Write_borders: {after-before} secs')
 
     # Declare variable for use outside the loop
     delta = 0.0
     n = 0
+
+# timing!
+    before = time()
 
     for n in range(0, steps):
         # Copy all items from data into prev
@@ -109,15 +128,30 @@ def run_simulation(width, height, steps):
         # Check the delta
         if delta < 0.001:
             break
+    
+# timing!
+    after = time()
+    print(f'Inner: {after-before} secs')
 
     # Report the value
     print("After %d iterations, delta was: %f" % (n+1, delta))
+
+# timing!
+    before = time()
 
     # Make 2D for plotting
     plt.imshow(np.reshape(data, (width, height)), interpolation="none")
     plt.show()
 
+#timing!
+    after = time()
+    print(f'Render image: {after-before} secs')
+
 if __name__ == "__main__":
+
+# timing!
+    bef_total = time()
+
     if use_c:
         use_clib()
 
@@ -127,7 +161,12 @@ if __name__ == "__main__":
 
     run_simulation(n, m, s)
 
+# timing!
+    aft_total = time()
+    print(f'Total program: {aft_total-bef_total} secs')
 
+
+"""
 # get the end time (Wall)
 end_time = time.time()
 
@@ -144,3 +183,4 @@ print("Wall execution time: ", execution_time_wall, "sec.")
 print("CPU execution time: ", execution_time_CPU, "sec.")
 
 print("\nWall execution time (forloop): ", res, "sec.")
+"""

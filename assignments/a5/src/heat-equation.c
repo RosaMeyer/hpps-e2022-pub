@@ -11,12 +11,13 @@ size_t pos(size_t width, size_t x, size_t y) {
     return y * width + x;
 }
 
-// Write borders
-void write_borders(float* data, size_t width, size_t height) {    
+void write_borders(float* data, size_t width, size_t height) {
+    // #pragma omp parallel for    
     for (size_t n = 0; n < width; n++) {
         data[pos(width, n , 0)] = 20.0;
         data[pos(width, n, height-1)] = -273.15;
     }    
+    // #pragma omp parallel for
     for (size_t n = 0; n < height; n++) {
         data[pos(width, 0, n)] = -273.15; 
         data[pos(width, width-1, n)] = -273.15;
@@ -40,9 +41,8 @@ void apply_stencil(float* data, size_t width, size_t height, size_t offset, floa
 
 // Computes the average elementwise difference between two arrays
 float compute_delta(float* data, float* prev, size_t width, size_t height) {
-    float res = 0.0;
-
-    #pragma omp parallel for reduction(+:res)
+    double res = 0.0;
+    #pragma omp parallel for collapse(2) reduction(+:res)
     for (size_t x = 0; x < width; x++) {
         for (size_t y = 0; y < height; y++) {
             res += fabs(prev[pos(width, x, y)] - data[pos(width, x, y)]);
@@ -59,11 +59,24 @@ void run_simulation(size_t width, size_t height, size_t steps, const char* filen
     float* prev = malloc(size * sizeof(float));
 
     memset(data, 0, size * sizeof(float));
+
+// timing!
+    double before = seconds();
+
     write_borders(data, width, height);
+
+// timing!
+    double after = seconds();
+    printf("Borders: %f\n", after-before);
 
     float delta = 0.0f;
     size_t n = 0;
 
+// timing!
+    before = seconds();
+
+    // computes delta at each iteration - as the former delta is dependent on 
+    // the earlier, this part can't be parallizied - I think...
     for(; n < steps; n++) {
         memcpy(prev, data, size*sizeof(float));
         apply_stencil(data, width, height, n % 2, 0.2f);
@@ -71,6 +84,10 @@ void run_simulation(size_t width, size_t height, size_t steps, const char* filen
         if (delta < 0.001f)
             break;
     }
+
+// timing!
+    after = seconds();
+    printf("Inner: %f\n", after-before);
 
     printf("After %lu iterations, delta was %f\n", n, delta);
     if (filename != NULL) {
@@ -82,6 +99,10 @@ void run_simulation(size_t width, size_t height, size_t steps, const char* filen
 }
 
 int main(int argc, char** argv) {
+
+// timing!
+    double bef = seconds();
+
     if (argc != 4 && argc != 5) {
         fprintf(stderr, "Usage: %s <width> <height> <steps> [output-file]\n", argv[0]);
         return 1;
@@ -107,6 +128,10 @@ int main(int argc, char** argv) {
     }
 
     run_simulation((size_t)width, (size_t)height, (size_t)steps, filename);
+
+// timing!
+double aft = seconds();
+printf("Total: %f\n", aft-bef);
 
     return 0;
 }
