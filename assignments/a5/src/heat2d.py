@@ -17,7 +17,7 @@ st = time.process_time()
 
 
 # Set this to True to use the C-accelerated implementation.
-use_c = False # OBS OBS: works if set to False
+use_c = True # OBS OBS: works if set to False
 print('use_c: ', use_c)
 
 # Prepare to load C library
@@ -155,9 +155,9 @@ if __name__ == "__main__":
     if use_c:
         use_clib()
 
-    n = 50 if len(sys.argv) < 2 else int(sys.argv[1])
-    m = 50 if len(sys.argv) < 3 else int(sys.argv[2])
-    s = 100 if len(sys.argv) < 4 else int(sys.argv[3])
+    n = 1000 if len(sys.argv) < 2 else int(sys.argv[1])
+    m = 1000 if len(sys.argv) < 3 else int(sys.argv[2])
+    s = 10 if len(sys.argv) < 4 else int(sys.argv[3])
 
     run_simulation(n, m, s)
 
